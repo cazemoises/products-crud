@@ -1,0 +1,24 @@
+version: '3'
+services:
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - 5432:5432
+
+  maven:
+    image: maven:latest
+    ports:
+      - 8080:8080
+    volumes:
+      - .:/app
+    working_dir: /app
+    command:  /bin/sh -c "mvn clean install && mvn spring-boot:run"
+    depends_on:
+      - db
