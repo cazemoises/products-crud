@@ -1,36 +1,42 @@
 package com.crud.storage;
 
-import com.crud.util.DBConnection;
 import java.sql.*;
+import com.crud.util.DBConnection;
 
 public class ProductStorage {
-  public static void main(String[] args) {
 
-    try {
+    public String store(String name, String description, double price) {
+        String productId = null;
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
 
-      Connection connection = DBConnection.connect();
+        try {
+            connection = DBConnection.getInstance().getConnection();
+            String sqlQuery = "INSERT INTO product (name, description, price) VALUES (?, ?, ?) RETURNING id";
+            
+            statement = connection.prepareStatement(sqlQuery);
+            statement.setString(1, name);
+            statement.setString(2, description);
+            statement.setDouble(3, price);
 
-      Statement statement = connection.createStatement();
+            resultSet = statement.executeQuery();
 
-      String sqlQuery = "SELECT * FROM product";
-      ResultSet resultSet = statement.executeQuery(sqlQuery);
+            if (resultSet.next()) {
+                productId = resultSet.getString("id");
+            }
 
-      while (resultSet.next()) {
-        int id = resultSet.getInt("id");
-        String name = resultSet.getString("name");
-        double price = resultSet.getDouble("price");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (resultSet != null) resultSet.close();
+                if (statement != null) statement.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
 
-        // Do something with the retrieved data
-        System.out.println("Product ID: " + id);
-        System.out.println("Product Name: " + name);
-        System.out.println("Product Price: " + price);
-      }
-
-      resultSet.close();
-      statement.close();
-      connection.close();
-    } catch (SQLException e) {
-      e.printStackTrace();
+        return productId;
     }
-  }
 }

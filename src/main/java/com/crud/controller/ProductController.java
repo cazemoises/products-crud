@@ -1,36 +1,34 @@
 package com.crud.controller;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import com.crud.storage.ProductStorage;
+import com.crud.dto.ProductRequest;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-@RestController()
+@RestController
 @RequestMapping("/product")
 public class ProductController {
     
-    @RequestMapping(value = "/list", method = RequestMethod.GET)
-    String list() {
-        return "List of products";
-    }
+    private ProductStorage productStorage;
 
-    @RequestMapping(value = "/store", method = RequestMethod.POST)
-    String store() {
-        return "Product stored";
+    public ProductController() {
+        try {
+            this.productStorage = new ProductStorage();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to initialize ProductStorage", e);
+        }
     }
-
-    @RequestMapping(value = "/update", method = RequestMethod.PUT)
-    String update() {
-        return "Product updated";
-    }
-
-    @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
-    String delete() {
-        return "Product deleted";
-    }
-
-    @RequestMapping(value = "/list-one", method = RequestMethod.GET)
-    String listOne() {
-        return "List one product";
+    
+    @PostMapping("/store")
+    ResponseEntity<String> store(@RequestBody ProductRequest productRequest) {
+        try {
+            String productId = productStorage.store(productRequest.getName(), productRequest.getDescription(), productRequest.getPrice());
+            return ResponseEntity.ok("Product stored with ID: " + productId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Error storing product");
+        }
     }
 
 }
