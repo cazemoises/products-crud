@@ -1,74 +1,45 @@
 package com.crud.storage;
 
-import java.sql.*;
-
 import org.springframework.stereotype.Service;
-
 import com.crud.model.Product;
 import com.crud.util.DBConnection;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
 public class ProductStorage {
 
     public String store(String name, String description, double price) {
-        Connection connection = null;
-        PreparedStatement statement = null;
-        ResultSet resultSet = null;
-        String productId = null;
-        
-        try {
-
-            productId = UUID.randomUUID().toString();
-
-            connection = DBConnection.getConnection();
-            String sqlQuery = "INSERT INTO product (id, name, description, price) VALUES (CAST(? AS UUID), ?, ?, ?) RETURNING id";
+        String sqlQuery = "INSERT INTO product (id, name, description, price) VALUES (CAST(? AS UUID), ?, ?, ?) RETURNING id";
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
             
-            statement = connection.prepareStatement(sqlQuery);
+            String productId = UUID.randomUUID().toString();
             statement.setString(1, productId);
             statement.setString(2, name);
-            statement.setString(3, description);    
+            statement.setString(3, description);
             statement.setDouble(4, price);
 
-            resultSet = statement.executeQuery();
-
-            if (resultSet.next()) {
-                productId = resultSet.getString("id");
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    return resultSet.getString("id");
+                }
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            try {
-                if (resultSet != null) resultSet.close();
-                if (statement != null) statement.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
-
-        return productId;
+        return null;
     }
 
     public Product[] list() {
-        Product[] products = null;
-        Connection connection = null;
-        Statement statement = null;
-        ResultSet resultSet = null;
+        List<Product> products = new ArrayList<>();
+        String sqlQuery = "SELECT * FROM product";
 
-        try {
-
-            connection = DBConnection.getConnection();
-
-            statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            resultSet = statement.executeQuery("SELECT * FROM product");
-
-            resultSet.last();
-            int rowCount = resultSet.getRow();
-            resultSet.beforeFirst();
-
-            products = new Product[rowCount];
-            int i = 0;
+        try (Connection connection = DBConnection.getConnection();
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(sqlQuery)) {
 
             while (resultSet.next()) {
                 Product product = new Product();
@@ -76,21 +47,11 @@ public class ProductStorage {
                 product.setName(resultSet.getString("name"));
                 product.setDescription(resultSet.getString("description"));
                 product.setPrice(resultSet.getDouble("price"));
-                products[i++] = product;
+                products.add(product);
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            try {
-                if (resultSet != null) resultSet.close();
-                if (statement != null) statement.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
-
-        return products;
+        return products.toArray(new Product[0]);
     }
-
 }
