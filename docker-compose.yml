@@ -21,3 +21,9 @@ services:
     command:  /bin/sh -c "mvn clean install && mvn spring-boot:run"
     depends_on:
       - db
+  currency:
+    build: ./currency_service
+    volumes:
+      - ./currency_service/cache:/app/cache
+    ports:
+      - "5000:5000"
