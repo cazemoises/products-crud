@@ -10,14 +10,23 @@ services:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - 5432:5432
-
-  maven:
+  product:
     image: maven:latest
     ports:
       - 8080:8080
     volumes:
-      - .:/app
-    working_dir: /app
+      - ./product_service:/product
+    working_dir: /product
+    command:  /bin/sh -c "mvn clean install && mvn spring-boot:run"
+    depends_on:
+      - db
+  customer:
+    image: maven:latest
+    ports:
+      - 8081:8081
+    volumes:
+      - ./customer_service:/customer
+    working_dir: /customer
     command:  /bin/sh -c "mvn clean install && mvn spring-boot:run"
     depends_on:
       - db
@@ -27,3 +36,7 @@ services:
       - ./currency_service/cache:/app/cache
     ports:
       - "5000:5000"
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"

@@ -8,19 +8,23 @@ CREATE TABLE "product" (
     updated_at DATE
 );
 
-CREATE TABLE "user" (
+CREATE TABLE customer (
     id UUID PRIMARY KEY,
     "name" VARCHAR(255) NOT NULL,
-    email VARCHAR(255) NOT NULL,
-    "password" VARCHAR(255) NOT NULL
+    surname VARCHAR(255) NOT NULL,
+    birthdate DATE NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    "password" VARCHAR(255) NOT NULL,
+    created_at DATE NOT NULL,
+    updated_at DATE
 );
 
 CREATE TABLE "order" (
     id UUID PRIMARY KEY,
-    user_id UUID NOT NULL,
+    customer_id UUID NOT NULL,
     product_id UUID NOT NULL,
     quantity INT NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES "user"(id),
+    FOREIGN KEY (customer_id) REFERENCES customer(id),
     FOREIGN KEY (product_id) REFERENCES product(id)
 );
 

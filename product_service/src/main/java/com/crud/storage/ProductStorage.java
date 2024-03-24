@@ -26,14 +26,6 @@ public class ProductStorage {
             statement.setDate(6, Date.valueOf(created_at));
             statement.setDate(7, updated_at != null ? Date.valueOf(updated_at) : null);
 
-            System.out.println("Product ID: " + productId);
-            System.out.println("Name: " + name);
-            System.out.println("Description: " + description);
-            System.out.println("Price: " + price);
-            System.out.println("Quantity: " + quantity);
-            System.out.println("Created At: " + created_at);
-            System.out.println("Updated At: " + updated_at);
-
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
                     return resultSet.getString("id");

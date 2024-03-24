@@ -1,2 +1,3 @@
 Flask
-requests
+forex-python
+redis

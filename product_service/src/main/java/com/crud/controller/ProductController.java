@@ -21,7 +21,7 @@ public class ProductController {
         this.productStorage = new ProductStorage();
     }
     
-    @PostMapping("/store")
+    @PostMapping("/")
     ResponseEntity<String> store(@RequestBody ProductRequest productRequest) {
         try {
             String productId = productStorage.store(productRequest.getName(), productRequest.getDescription(), productRequest.getPrice(), productRequest.getQuantity(), LocalDate.now(), null);
