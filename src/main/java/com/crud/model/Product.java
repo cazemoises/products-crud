@@ -1,20 +1,29 @@
 package com.crud.model;
 
+import java.time.LocalDate;
+
 public class Product {
 
     private String id;
     private String name;
     private String description;
     private double price;
+    private int quantity;
+
+    private LocalDate created_at;
+    private LocalDate updated_at;
 
     public Product() {
     }
 
-    public Product(String id, String name, String description, double price) {
+    public Product(String id, String name, String description, double price, int quantity, LocalDate created_at, LocalDate updated_at) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.price = price;
+        this.quantity = quantity;
+        this.created_at = created_at;
+        this.updated_at = updated_at;
     }
 
     public String getId() {
@@ -47,6 +56,30 @@ public class Product {
 
     public void setPrice(double price) {
         this.price = price;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    public LocalDate getCreated_at() {
+        return created_at;
+    }
+
+    public void setCreated_at(LocalDate created_at) {
+        this.created_at = created_at;
+    }
+
+    public LocalDate getUpdated_at() {
+        return updated_at;
+    }
+
+    public void setUpdated_at(LocalDate updated_at) {
+        this.updated_at = updated_at;
     }
 
     @Override
