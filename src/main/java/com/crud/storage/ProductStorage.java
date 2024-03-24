@@ -6,22 +6,26 @@ import org.springframework.stereotype.Service;
 
 import com.crud.model.Product;
 import com.crud.util.DBConnection;
+import java.util.UUID;
 
 @Service
 public class ProductStorage {
 
-    public String store(String id, String name, String description, double price) {
-        String productId = null;
+    public String store(String name, String description, double price) {
         Connection connection = null;
         PreparedStatement statement = null;
         ResultSet resultSet = null;
-
+        String productId = null;
+        
         try {
+
+            productId = UUID.randomUUID().toString();
+
             connection = DBConnection.getConnection();
             String sqlQuery = "INSERT INTO product (id, name, description, price) VALUES (CAST(? AS UUID), ?, ?, ?) RETURNING id";
             
             statement = connection.prepareStatement(sqlQuery);
-            statement.setString(1, id);
+            statement.setString(1, productId);
             statement.setString(2, name);
             statement.setString(3, description);    
             statement.setDouble(4, price);

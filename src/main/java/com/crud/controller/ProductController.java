@@ -22,7 +22,7 @@ public class ProductController {
     @PostMapping("/store")
     ResponseEntity<String> store(@RequestBody ProductRequest productRequest) {
         try {
-            String productId = productStorage.store(productRequest.getId(), productRequest.getName(), productRequest.getDescription(), productRequest.getPrice());
+            String productId = productStorage.store(productRequest.getName(), productRequest.getDescription(), productRequest.getPrice());
             return ResponseEntity.ok("Product stored with ID: " + productId);
         } catch (Exception e) {
             e.printStackTrace();
@@ -33,9 +33,7 @@ public class ProductController {
     @GetMapping("/")
     ResponseEntity<Product[]> list() {
         try {
-            System.out.println("TESTE");
             Product[] products = productStorage.list();
-            System.out.println("TESTE");
             return ResponseEntity.ok(products);
         } catch (Exception e) {
             e.printStackTrace();
